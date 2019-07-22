@@ -1,7 +1,8 @@
 # dawnbench_inference
 ## Prepare Environment
-Host: 1 x Nvidia GeForce GTX 1080Ti, 2 x Intel(R) Xeon(R) Silver 4114 CPU @ 2.20GHz, 256G Memory
-Container Image: nvcr.io/nvidia/tensorrt:19.05-py3
+Host: 1 x Nvidia GeForce GTX 1080Ti, 2 x Intel(R) Xeon(R) Silver 4114 CPU @ 2.20GHz, 256G Memory  
+Container Image: nvcr.io/nvidia/tensorrt:19.05-py3  
+
 1. Pull Docker Image nvcr.io/nvidia/tensorrt:19.05-py3 from NGC
 2. Clone this repo
 ## Run inference
