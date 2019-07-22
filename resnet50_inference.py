@@ -150,7 +150,8 @@ class LoggerHook(tf.train.SessionRunHook):
                 self.batch_size / self.iter_times[-1]))
 
 def run(frozen_graph, model, data_files, batch_size,
-        num_iterations, num_warmup_iterations=100, display_every=100, intra=1, inter=8):
+        num_iterations, num_warmup_iterations=100, display_every=100,
+        intra_op_parallelism_threads=1, inter_op_parallelism_threads=8):
     # Define model function for tf.estimator.Estimator
     
     def model_fn(features, labels, mode):
@@ -165,7 +166,6 @@ def run(frozen_graph, model, data_files, batch_size,
         top5accuracy = tf.nn.in_top_k(predictions=logits_out, targets=labels, k=5, name='acc_op')
         top5accuracy = tf.cast(top5accuracy, tf.int32)
         top5accuracy = tf.metrics.mean(top5accuracy)
-
 
         if mode == tf.estimator.ModeKeys.EVAL:
             return tf.estimator.EstimatorSpec(
@@ -202,8 +202,8 @@ def run(frozen_graph, model, data_files, batch_size,
         batch_size=batch_size,
         num_records=get_tfrecords_count(data_files))
     tf_config = tf.ConfigProto()
-    tf_config.intra_op_parallelism_threads = intra
-    tf_config.inter_op_parallelism_threads = inter
+    tf_config.intra_op_parallelism_threads = intra_op_parallelism_threads
+    tf_config.inter_op_parallelism_threads = inter_op_parallelism_threads
     
     estimator = tf.estimator.Estimator(
         model_fn=model_fn,
@@ -252,8 +252,8 @@ if __name__ == '__main__':
                         help='How many iterations(batches) to evaluate. If not supplied, the whole set will be evaluated.')
     parser.add_argument('--num_warmup_iterations', type=int, default=100,
                         help='Number of initial iterations skipped from timing')
-    parser.add_argument('--intra', type=int, default=1)
-    parser.add_argument('--inter', type=int, default=1)
+    parser.add_argument('--intra_op_parallelism_threads', type=int, default=1)
+    parser.add_argument('--inter_op_parallelism_threads', type=int, default=1)
     args = parser.parse_args()
 
     def get_files(data_dir, filename_pattern):
@@ -293,8 +293,8 @@ if __name__ == '__main__':
         num_iterations=args.num_iterations,
         num_warmup_iterations=args.num_warmup_iterations,
         display_every=args.display_every,
-        intra=args.intra,
-        inter=args.inter)
+        intra_op_parallelism_threads=args.intra_op_parallelism_threads,
+        inter_op_parallelism_threads=args.inter_op_parallelism_threads)
 
     # Display results
     print('results of {}:'.format(args.model))
